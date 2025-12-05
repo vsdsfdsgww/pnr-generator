@@ -60,6 +60,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.logo-section:hover {
+    opacity: 0.8;
 }
 
 .logo-icon {
