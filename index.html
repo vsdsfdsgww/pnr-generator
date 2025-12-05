@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nordic PNR Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <h1>Nordic PNR Generator</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="landing-container">
+            <div class="welcome-section">
+                <h2>Select a Country</h2>
+                <p class="welcome-text">Choose a Nordic country to generate valid personal identification numbers for testing purposes</p>
+            </div>
+
+            <div class="country-grid">
+                <a href="sweden.html" class="country-card">
+                    <div class="country-flag">🇸🇪</div>
+                    <h3>Sweden</h3>
+                    <p>Personnummer</p>
+                    <span class="card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+
+                <a href="denmark.html" class="country-card">
+                    <div class="country-flag">🇩🇰</div>
+                    <h3>Denmark</h3>
+                    <p>CPR Number</p>
+                    <span class="card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+
+                <a href="norway.html" class="country-card">
+                    <div class="country-flag">🇳🇴</div>
+                    <h3>Norway</h3>
+                    <p>Fødselsnummer</p>
+                    <span class="card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-description">
+                <h3>Nordic Personal Number Generator</h3>
+                <p>Free online tool to generate valid personal identification numbers for Sweden, Denmark, and Norway. Create syntactically correct personnummer, CPR numbers, and fødselsnummer for testing, development, and QA purposes. Our generators use official validation algorithms (Luhn for Sweden, Modulo 11 for Norway and Denmark) to ensure realistic test data without compromising real personal information. Perfect for developers building Nordic applications, integration testing, and database population.</p>
+            </div>
+            <div class="footer-meta">
+                <p>Generates syntactically valid numbers for testing purposes.</p>
+                <p class="footer-small">Algorithms implemented: Luhn (SE), Mod11 (NO/DK).</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

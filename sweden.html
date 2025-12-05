@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweden - Personnummer Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <h1>Nordic PNR Generator</h1>
+            </div>
+            <a href="index.html" class="header-action">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="generator-layout">
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <h2 class="panel-header">Configuration</h2>
+
+                <form id="pnrForm">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <div class="select-wrapper">
+                            <select id="country" onchange="handleCountryChange(this.value)">
+                                <option value="sweden" selected>🇸🇪 Sweden (Personnummer)</option>
+                                <option value="denmark">🇩🇰 Denmark (CPR Number)</option>
+                                <option value="norway">🇳🇴 Norway (Fødselsnummer)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Input Method</label>
+                        <div class="radio-grid">
+                            <label class="radio-option">
+                                <input type="radio" name="inputMethod" value="age" checked onchange="toggleInputMethod()">
+                                <span class="radio-label">
+                                    <i class="fa-solid fa-calendar-day"></i> Age
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="inputMethod" value="birthdate" onchange="toggleInputMethod()">
+                                <span class="radio-label">
+                                    <i class="fa-solid fa-calendar"></i> Birth Date
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="ageGroup">
+                        <label for="age">Age</label>
+                        <input type="number" id="age" min="0" max="120" value="25" placeholder="e.g. 25">
+                    </div>
+
+                    <div class="form-group" id="birthDateGroup" style="display: none;">
+                        <label for="birthDate">Birth Date</label>
+                        <input type="text" id="birthDate" value="2000" placeholder="e.g. 1990, 1990-05, or 1990-05-15">
+                        <div class="input-hint">Enter year (YYYY), year-month (YYYY-MM), or full date (YYYY-MM-DD)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Legal Sex</label>
+                        <div class="radio-grid">
+                            <label class="radio-option">
+                                <input type="radio" name="sex" value="male" checked>
+                                <span class="radio-label">
+                                    <i class="fa-solid fa-mars"></i> Male
+                                </span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sex" value="female">
+                                <span class="radio-label">
+                                    <i class="fa-solid fa-venus"></i> Female
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="generate-btn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Generate PNR
+                    </button>
+                </form>
+
+                <div class="info-box">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>Sweden uses the Luhn algorithm. Format: YYYYMMDD-NNNC. 3rd digit of serial indicates sex (Odd: Male, Even: Female).</p>
+                </div>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <div class="results-header">
+                    <h3>Generated History</h3>
+                    <button class="clear-btn" onclick="clearHistory()">Clear All</button>
+                </div>
+                <div id="resultList" class="results-list">
+                    <div class="results-empty">
+                        <div class="empty-icon">
+                            <i class="fa-regular fa-id-card"></i>
+                        </div>
+                        <p>No numbers generated yet.</p>
+                        <p>Fill the form and click generate.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-description">
+                <h3>Swedish Personnummer Generator</h3>
+                <p>Generate valid Swedish personnummer (personal identity numbers) for testing and development purposes. Our tool creates syntactically correct Swedish social security numbers that follow the official format (YYYYMMDD-NNNC) and pass Luhn algorithm validation. Perfect for developers, testers, and QA professionals who need realistic test data for Swedish applications, forms, and databases without using real personal information.</p>
+                <div class="footer-lang-divider"></div>
+                <h3>Svensk Personnummer Generator</h3>
+                <p>Generera giltiga svenska personnummer för test- och utvecklingsändamål. Vårt verktyg skapar syntaktiskt korrekta svenska personnummer som följer det officiella formatet (ÅÅÅÅMMDD-NNNC) och klarar Luhn-algoritm validering. Perfekt för utvecklare, testare och QA-professionella som behöver realistisk testdata för svenska applikationer, formulär och databaser utan att använda verklig personlig information.</p>
+            </div>
+            <div class="footer-meta">
+                <p>Generates syntactically valid numbers for testing purposes.</p>
+                <p class="footer-small">Algorithms implemented: Luhn (SE), Mod11 (NO/DK).</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const STORAGE_KEY = 'sweden_pnr_history';
+
+        function handleCountryChange(country) {
+            const countryMap = {
+                'sweden': 'sweden.html',
+                'denmark': 'denmark.html',
+                'norway': 'norway.html'
+            };
+            if (countryMap[country]) {
+                window.location.href = countryMap[country];
+            }
+        }
+
+        function saveToStorage(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function loadFromStorage() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function calculateLuhnCheckDigit(numberStr) {
+            let sum = 0;
+            for (let i = 0; i < numberStr.length; i++) {
+                let digit = parseInt(numberStr[i]);
+                if (i % 2 === 0) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+            }
+            return (10 - (sum % 10)) % 10;
+        }
+
+        function generateSwedishPersonnummer(age, sex) {
+            const today = new Date();
+            const birthYear = today.getFullYear() - age;
+            const birthMonth = Math.floor(Math.random() * 12) + 1;
+            const birthDay = Math.floor(Math.random() * 28) + 1;
+
+            const dateStr = `${birthYear}${String(birthMonth).padStart(2, '0')}${String(birthDay).padStart(2, '0')}`;
+
+            let birthNumber;
+            if (sex === 'male') {
+                birthNumber = Math.floor(Math.random() * 500) * 2 + 1;
+            } else {
+                birthNumber = Math.floor(Math.random() * 500) * 2;
+            }
+            birthNumber = String(birthNumber).padStart(3, '0');
+
+            const baseNumber = dateStr.substring(2) + birthNumber;
+            const checkDigit = calculateLuhnCheckDigit(baseNumber);
+
+            return `${dateStr}-${birthNumber}${checkDigit}`;
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const icon = btn.querySelector('i');
+                const resultItem = btn.closest('.result-item');
+
+                icon.className = "fa-solid fa-check";
+                btn.classList.add('copied');
+                resultItem.classList.add('copied');
+
+                // Update storage
+                const history = loadFromStorage();
+                const index = history.findIndex(item => item.pnr === text);
+                if (index !== -1) {
+                    history[index].isCopied = true;
+                    saveToStorage(history);
+                }
+            });
+        }
+
+        function formatDateTime(timestamp) {
+            const date = new Date(timestamp);
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            return `${dateStr} • ${timeStr}`;
+        }
+
+        function addResult(pnr, details, sex, isAutoGenerated = false, isCopied = false, timestamp = null) {
+            const list = document.getElementById('resultList');
+
+            if (list.querySelector('.results-empty')) {
+                list.innerHTML = '';
+            }
+
+            const ts = timestamp || Date.now();
+            const dateTimeStr = formatDateTime(ts);
+
+            const item = document.createElement('div');
+            item.className = "result-item" + (isCopied ? " copied" : "");
+
+            const sexIcon = sex === 'male'
+                ? '<i class="fa-solid fa-mars" style="color: var(--color-male);"></i>'
+                : '<i class="fa-solid fa-venus" style="color: var(--color-female);"></i>';
+
+            const autoBadge = isAutoGenerated
+                ? '<span class="autogenerated-badge"><i class="fa-solid fa-sparkles"></i> Auto-generated</span>'
+                : '';
+
+            const copyIcon = isCopied ? 'fa-solid fa-check' : 'fa-regular fa-copy';
+            const copyClass = isCopied ? 'copy-btn copied' : 'copy-btn';
+
+            item.innerHTML = `
+                <div class="result-content">
+                    <div class="result-number-row">
+                        <span class="result-number">${pnr}</span>
+                        <span class="sex-badge">${sexIcon}</span>
+                        ${autoBadge}
+                        <button onclick="copyToClipboard('${pnr}', this)" class="${copyClass}" title="Copy">
+                            <i class="${copyIcon}"></i>
+                        </button>
+                    </div>
+                    <div class="result-details">${details}</div>
+                </div>
+                <div class="result-timestamp"><i class="fa-regular fa-clock"></i> ${dateTimeStr}</div>
+            `;
+
+            list.insertBefore(item, list.firstChild);
+
+            // Save to storage
+            const history = loadFromStorage();
+            history.unshift({ pnr, details, sex, isAutoGenerated, isCopied, timestamp: ts });
+            saveToStorage(history);
+        }
+
+        function clearHistory() {
+            const list = document.getElementById('resultList');
+            list.innerHTML = `
+                <div class="results-empty">
+                    <div class="empty-icon">
+                        <i class="fa-regular fa-id-card"></i>
+                    </div>
+                    <p>No numbers generated yet.</p>
+                    <p>Fill the form and click generate.</p>
+                </div>
+            `;
+            localStorage.removeItem(STORAGE_KEY);
+        }
+
+        function getTimeLabel(timestamp) {
+            if (!timestamp) return null; // No timestamp available
+
+            const now = new Date();
+            const date = new Date(timestamp);
+
+            // Check if date is valid
+            if (isNaN(date.getTime())) return null;
+
+            const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const itemDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+            const diffTime = nowDay - itemDay;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) return null; // Today - no separator
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) {
+                const weeks = Math.floor(diffDays / 7);
+                return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
+            }
+            if (diffDays < 365) {
+                const months = Math.floor(diffDays / 30);
+                return months === 1 ? '1 month ago' : `${months} months ago`;
+            }
+            const years = Math.floor(diffDays / 365);
+            return years === 1 ? '1 year ago' : `${years} years ago`;
+        }
+
+        function loadHistory() {
+            const history = loadFromStorage();
+            if (history.length > 0) {
+                const list = document.getElementById('resultList');
+                list.innerHTML = '';
+
+                let lastLabel = null;
+                history.forEach(item => {
+                    const currentLabel = getTimeLabel(item.timestamp);
+
+                    if (currentLabel && currentLabel !== lastLabel) {
+                        const separator = document.createElement('div');
+                        separator.className = 'history-separator';
+                        separator.textContent = currentLabel;
+                        list.appendChild(separator);
+                        lastLabel = currentLabel;
+                    }
+
+                    addResultWithoutSaving(item.pnr, item.details, item.sex, item.isAutoGenerated, item.isCopied, item.timestamp);
+                });
+            }
+        }
+
+        function addResultWithoutSaving(pnr, details, sex, isAutoGenerated = false, isCopied = false, timestamp = null) {
+            const list = document.getElementById('resultList');
+
+            if (list.querySelector('.results-empty')) {
+                list.innerHTML = '';
+            }
+
+            const dateTimeStr = formatDateTime(timestamp || Date.now());
+
+            const item = document.createElement('div');
+            item.className = "result-item" + (isCopied ? " copied" : "");
+
+            const sexIcon = sex === 'male'
+                ? '<i class="fa-solid fa-mars" style="color: var(--color-male);"></i>'
+                : '<i class="fa-solid fa-venus" style="color: var(--color-female);"></i>';
+
+            const autoBadge = isAutoGenerated
+                ? '<span class="autogenerated-badge"><i class="fa-solid fa-sparkles"></i> Auto-generated</span>'
+                : '';
+
+            const copyIcon = isCopied ? 'fa-solid fa-check' : 'fa-regular fa-copy';
+            const copyClass = isCopied ? 'copy-btn copied' : 'copy-btn';
+
+            item.innerHTML = `
+                <div class="result-content">
+                    <div class="result-number-row">
+                        <span class="result-number">${pnr}</span>
+                        <span class="sex-badge">${sexIcon}</span>
+                        ${autoBadge}
+                        <button onclick="copyToClipboard('${pnr}', this)" class="${copyClass}" title="Copy">
+                            <i class="${copyIcon}"></i>
+                        </button>
+                    </div>
+                    <div class="result-details">${details}</div>
+                </div>
+                <div class="result-timestamp"><i class="fa-regular fa-clock"></i> ${dateTimeStr}</div>
+            `;
+
+            list.appendChild(item);
+        }
+
+        function toggleInputMethod() {
+            const method = document.querySelector('input[name="inputMethod"]:checked').value;
+            const ageGroup = document.getElementById('ageGroup');
+            const birthDateGroup = document.getElementById('birthDateGroup');
+
+            if (method === 'age') {
+                ageGroup.style.display = 'block';
+                birthDateGroup.style.display = 'none';
+                document.getElementById('age').required = true;
+                document.getElementById('birthDate').required = false;
+            } else {
+                ageGroup.style.display = 'none';
+                birthDateGroup.style.display = 'block';
+                document.getElementById('age').required = false;
+                document.getElementById('birthDate').required = true;
+            }
+        }
+
+        function parseBirthDate(input) {
+            const parts = input.trim().split('-');
+            const today = new Date();
+            let year, month, day;
+
+            if (parts.length === 1) {
+                // Year only (e.g., "1990")
+                year = parseInt(parts[0]);
+                month = Math.floor(Math.random() * 12) + 1;
+                day = Math.floor(Math.random() * 28) + 1;
+            } else if (parts.length === 2) {
+                // Year-Month (e.g., "1990-05")
+                year = parseInt(parts[0]);
+                month = parseInt(parts[1]);
+                day = Math.floor(Math.random() * 28) + 1;
+            } else if (parts.length === 3) {
+                // Full date (e.g., "1990-05-15")
+                year = parseInt(parts[0]);
+                month = parseInt(parts[1]);
+                day = parseInt(parts[2]);
+            } else {
+                return null;
+            }
+
+            if (isNaN(year) || year < 1900 || year > today.getFullYear()) {
+                return null;
+            }
+            if (isNaN(month) || month < 1 || month > 12) {
+                return null;
+            }
+            if (isNaN(day) || day < 1 || day > 31) {
+                return null;
+            }
+
+            const age = today.getFullYear() - year;
+            return { year, month, day, age };
+        }
+
+        function generateSwedishPersonnummerFromDate(year, month, day, sex) {
+            const dayStr = String(day).padStart(2, '0');
+            const monthStr = String(month).padStart(2, '0');
+            const dateStr = `${year}${monthStr}${dayStr}`;
+
+            let birthNumber;
+            if (sex === 'male') {
+                birthNumber = Math.floor(Math.random() * 500) * 2 + 1;
+            } else {
+                birthNumber = Math.floor(Math.random() * 500) * 2;
+            }
+            birthNumber = String(birthNumber).padStart(3, '0');
+
+            const baseNumber = dateStr.substring(2) + birthNumber;
+            const checkDigit = calculateLuhnCheckDigit(baseNumber);
+
+            return `${dateStr}-${birthNumber}${checkDigit}`;
+        }
+
+        document.getElementById('pnrForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const method = document.querySelector('input[name="inputMethod"]:checked').value;
+            const sex = document.querySelector('input[name="sex"]:checked').value;
+            let pnr, birthYear, details;
+
+            if (method === 'age') {
+                const ageInput = document.getElementById('age');
+                const age = parseInt(ageInput.value);
+
+                if (!age || age < 0 || age > 120) {
+                    ageInput.focus();
+                    return;
+                }
+
+                pnr = generateSwedishPersonnummer(age, sex);
+                birthYear = new Date().getFullYear() - age;
+            } else {
+                const birthDateInput = document.getElementById('birthDate');
+                const birthDateValue = birthDateInput.value;
+
+                if (!birthDateValue) {
+                    birthDateInput.focus();
+                    return;
+                }
+
+                const parsed = parseBirthDate(birthDateValue);
+                if (!parsed) {
+                    alert('Invalid date format. Use YYYY, YYYY-MM, or YYYY-MM-DD');
+                    birthDateInput.focus();
+                    return;
+                }
+
+                pnr = generateSwedishPersonnummerFromDate(parsed.year, parsed.month, parsed.day, sex);
+                birthYear = parsed.year;
+            }
+
+            details = `Sweden • Born ${birthYear}`;
+            addResult(pnr, details, sex);
+        });
+
+        // Load history and auto-generate on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const history = loadFromStorage();
+
+            if (history.length > 0) {
+                loadHistory();
+            } else {
+                // Only auto-generate if no history exists
+                const age = 25;
+                const sex = 'male';
+                const pnr = generateSwedishPersonnummer(age, sex);
+                const birthYear = new Date().getFullYear() - age;
+                const details = `Sweden • Born ${birthYear}`;
+
+                addResult(pnr, details, sex, true);
+            }
+        });
+    </script>
+</body>
+</html>
